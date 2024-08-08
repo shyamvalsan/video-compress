@@ -1,3 +1,7 @@
+## Pre-requisite
+
+- Install `ffmpeg`
+
 ## How to use
 
 To optimize storage in Google Photos (or other types of storage, cloud or on-prem) do the following: 
