@@ -1,19 +1,50 @@
-## Pre-requisite
+# video-compress
 
-- Install `ffmpeg`
+Batch-compress video with ffmpeg to cut cloud storage costs. One script, nothing to install but ffmpeg.
 
-## How to use
+Pointed at a folder of home videos and phone footage:
 
-To optimize storage in Google Photos (or other types of storage, cloud or on-prem) do the following: 
+| | |
+|---|---|
+| Input | 250 videos, mixed formats — **43.6 GB** |
+| Output | **3.02 GB** |
+| Result | **14.4× smaller** — 93.1% of the storage reclaimed |
 
-0. Clone this repo to a new directory
-1. Download or move video files (any format) to the same path as compress_videos.sh
-2. `chmod +x compress_videos.sh`
-3. `./compress_videos.sh *`
-4. Wait a while, it can take a few hours depending on how many videos you're compressing
+No quality loss noticeable on a 27-inch screen. Good for home videos and mobile camera footage where a nominal drop is fine — not for footage you intend to edit further or keep as a master.
 
-## Test results
+## Requirements
 
-- 250 videos of mixed formats, totalling to 43.6GB was compressed without noticeable quality loss (on a 27 inch screen) to 3.02GB
-- An impressive compression ratio of 14.44 (storage was optimized by 93.07%)
-- Works well for saving home videos, mobile camera footage where nominal loss in quality is not problematic
+- `ffmpeg` on your `PATH`
+
+## Use it
+
+```bash
+git clone https://github.com/shyamvalsan/video-compress.git
+cd video-compress
+chmod +x compress_videos.sh
+cp /path/to/your/videos/* .    # the script operates on files in its own directory
+./compress_videos.sh *
+```
+
+Each `NAME.ext` becomes `NAME_compressed.mp4` beside it. **Originals are never modified or deleted** — check the output, then remove the originals yourself.
+
+Budget hours, not minutes, for a large batch: `-preset slow` deliberately trades encoding time for smaller files.
+
+## What it does to each file
+
+| | |
+|---|---|
+| Video | H.264 (`libx264`), `-preset slow`, `-crf 23` |
+| Resolution | scaled to **720p** (`scale=-2:720`, aspect ratio preserved) |
+| Audio | AAC, 128 kbps |
+| Playback | `+faststart`, so it streams without a full download |
+
+The 720p downscale is a large part of that 14.4× — worth knowing if your source is 4K and you want to keep the resolution.
+
+## Known issue
+
+The per-file compression summary printed at the end uses `stat -f%z`, which is macOS/BSD syntax. On Linux that line errors out (`stat -c%s` is the equivalent). The encoding itself is unaffected and completes normally.
+
+## License
+
+GPL-3.0
